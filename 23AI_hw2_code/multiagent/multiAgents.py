@@ -142,12 +142,30 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
     Your minimax agent with alpha-beta pruning (question 3)
     """
-
+    
     def getAction(self, gameState: GameState):
         """
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
+
+        INF = 99999999
+        def max_value(state, alpha, beta):
+            v = -INF
+            for succ in state:
+                v = max(v, value(succ, alpha, beta))
+                if v > beta: return v
+                alpha = max(alpha, v)
+            return v
+        
+        def max_value(state, alpha, beta):
+            v = INF
+            for succ in state:
+                v = min(v, value(succ, alpha, beta))
+                if v < alpha: return v
+                beta = min(beta, v)
+            return v
+
         util.raiseNotDefined()
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
