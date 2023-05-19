@@ -179,7 +179,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             beta: MIN's bset option on path to root
             """
             
-            if state.isWin() or state.isLose():
+            if state.isWin() or state.isLose() or depth is self.depth:
                 return self.evaluationFunction(state)
             
             v = INF
