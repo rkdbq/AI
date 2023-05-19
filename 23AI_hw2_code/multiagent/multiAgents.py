@@ -149,22 +149,70 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
 
-        INF = 99999999
-        def max_value(state, alpha, beta):
+        PACMAN = 0
+        GHOST_ST = 1
+        GHOST_EN = gameState.getNumAgents() - 1
+        INF = 999999
+
+        def max_value(state: GameState, alpha, beta, depth):
+            """
+            alpha: MAX's best option on path to root
+            beta: MIN's bset option on path to root
+            """
+            
+            if state.isWin() or state.isLose() or depth is self.depth:
+                return self.evaluationFunction(state)
+            
             v = -INF
-            for succ in state:
-                v = max(v, value(succ, alpha, beta))
+            for action in state.getLegalActions(PACMAN):
+                succ = state.generateSuccessor(PACMAN, action)
+                v = max(v, min_value(succ, alpha, beta, depth, GHOST_ST))
+
                 if v > beta: return v
                 alpha = max(alpha, v)
+
             return v
         
-        def max_value(state, alpha, beta):
+        def min_value(state: GameState, alpha, beta, depth, ghost_num):
+            """
+            alpha: MAX's best option on path to root
+            beta: MIN's bset option on path to root
+            """
+            
+            if state.isWin() or state.isLose():
+                return self.evaluationFunction(state)
+            
             v = INF
-            for succ in state:
-                v = min(v, value(succ, alpha, beta))
+            for action in state.getLegalActions(ghost_num):
+                succ = state.generateSuccessor(ghost_num, action)
+                if ghost_num < GHOST_EN:
+                    v = min(v, min_value(succ, alpha, beta, depth, ghost_num + 1))
+                else: 
+                    v = min(v, max_value(succ, alpha, beta, depth + 1))  
+
                 if v < alpha: return v
                 beta = min(beta, v)
+
             return v
+        
+        alpha = -INF
+        beta = INF
+        max_val = -INF
+        max_action = ''
+        for action in gameState.getLegalActions(PACMAN):
+            succ = gameState.generateSuccessor(PACMAN, action)
+            val = min_value(succ, alpha, beta, 0, GHOST_ST)
+
+            if val > max_val:
+                max_val = val
+                max_action = action
+
+            if val > beta:
+                return max_action
+            
+            alpha = max(alpha, val)
+
+        return max_action
 
         util.raiseNotDefined()
 
